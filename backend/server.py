@@ -201,6 +201,9 @@ async def create_bill(bill: BillCreate, current_user: str = Depends(verify_token
     })
     bill_number = f"BILL-{today.strftime('%Y%m%d')}-{bill_count + 1:03d}"
     
+    # Calculate total profit from items
+    total_profit = sum(item.profit for item in bill.items)
+    
     # Calculate remaining balance for credit bills
     remaining_balance = None
     if bill.bill_type == "credit":
@@ -208,6 +211,7 @@ async def create_bill(bill: BillCreate, current_user: str = Depends(verify_token
     
     bill_dict = bill.dict()
     bill_dict["bill_number"] = bill_number
+    bill_dict["profit"] = total_profit
     bill_dict["remaining_balance"] = remaining_balance
     
     bill_obj = Bill(**bill_dict)
